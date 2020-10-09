@@ -2,15 +2,20 @@ package com.example.otraapp;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.content.AsyncTaskLoader;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private TimerTask mtimer = null;
     private Timer myTimer = null;
     private TextView mtext = null;
+    Button btnPermissions = null;
+    MainActivity activity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +61,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mtext = findViewById(R.id.textoCron);
-        chronometer();
+        btnPermissions = findViewById(R.id.btnPermisos);
+        btnPermissions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        launchTask();
 
     }
 
@@ -84,7 +99,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         currentTime++;
-                        mtext.setText(String.valueOf(currentTime));
+
+                        launchTaskCrono();
 
                     }
                 });
@@ -118,5 +134,58 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+    }
+    public void launchTaskCrono() {
+        MyAsyncTask taskCrono = new MyAsyncTask();
+        taskCrono.setContext();
+        taskCrono.execute();
+    }
+
+    public class MyAsyncTask extends AsyncTask<String, Integer, Void> {
+        private ProgressDialog mprogress = null;
+        private boolean showProgressDialog = true;
+        private Context mcontext;
+
+        public void setContext () {
+            mcontext=getApplicationContext();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mprogress= new ProgressDialog(activity);
+            mprogress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mprogress.setTitle("Download....");
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            mprogress.setMessage("Download values....");
+            mprogress.show();
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            if (showProgressDialog){
+                publishProgress();
+            }
+            showProgressDialog=false;
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mprogress.dismiss();
+            mtext.setText(String.valueOf(currentTime));
+            Toast.makeText(getApplicationContext(), "Async Task ended", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void launchTask() {
+        MyAsyncTask mytask = new MyAsyncTask();
+        mytask.setContext();
+        mytask.execute();
     }
 }

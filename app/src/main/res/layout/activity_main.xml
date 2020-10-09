@@ -9,6 +9,7 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         tools:layout_editor_absoluteX="-117dp"
         tools:layout_editor_absoluteY="112dp">
 
@@ -31,6 +32,12 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:textSize="50dp" />
+
+        <Button
+            android:id="@+id/btnPermisos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Permisos" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
